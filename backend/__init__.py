@@ -5,6 +5,7 @@ import click
 from flask import Flask
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 # import psycopg2
 
 logging.basicConfig(level=logging.INFO)
@@ -34,8 +35,10 @@ def create_app():
     from backend.model.tournament import Tournament
     from backend.model.participant import Participant, Paring
 
-    init_db(app)
+    # Used for db init:
+    # init_db(app)
     app.debug = True
+    CORS(app)
 
     return app
 
