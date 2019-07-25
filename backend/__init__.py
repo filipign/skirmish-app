@@ -12,6 +12,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 db = SQLAlchemy()
+secret_key = ''
+try:
+    secret_key = os.environ['DB_URI']
+except KeyError:
+    logger.error('You have to set database uri'
+                 '(enviromental variable DB_URI) first.')
+    exit()
 
 def init_db(app):
     with app.app_context():
@@ -27,6 +34,7 @@ def create_app():
                      '(enviromental variable DB_URI) first.')
         exit()
 
+    app.config['SECRET_KEY'] = secret_key
     db.init_app(app)
 
     register_blueprints(app)
@@ -34,10 +42,12 @@ def create_app():
 
     from backend.model.tournament import Tournament
     from backend.model.participant import Participant, Paring
+    from backend.model.user import User
 
     # Used for db init:
-    # init_db(app)
+    init_db(app)
     app.debug = True
+
     CORS(app)
 
     return app
@@ -46,10 +56,12 @@ def register_blueprints(app):
     from backend.view import main
     from backend.view import participant
     from backend.view import tournament
+    from backend.view import auth
 
     app.register_blueprint(main.blueprint)
     app.register_blueprint(participant.blueprint)
     app.register_blueprint(tournament.blueprint)
+    app.register_blueprint(auth.blueprint)
 
 def register_error_handlers(app):
     from backend.view import error
