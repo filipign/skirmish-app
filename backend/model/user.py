@@ -69,18 +69,13 @@ class User(db.Model):
 
     @staticmethod
     def decode_auth_token(auth_token):
-        """
-        Decodes the auth token
+        '''
+        Decodes the auth token.
 
         Args:
             auth_token (string): auth_token
 
         Returns:
-        """
-        try:
-            payload = jwt.decode(auth_token, secret_key)
-            return payload['sub']
-        except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
-        except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'
+            integer: user's ID
+        '''
+        return jwt.decode(auth_token, secret_key)

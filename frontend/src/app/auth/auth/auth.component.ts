@@ -37,11 +37,13 @@ export class AuthComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.registerSubscription = new Subscription();
+        this.loginSubscription = new Subscription();
     }
 
     submitRegisterForm() {
         if (!this.registerForm.valid) return;
-        this.auth.registerUser(this.registerForm.value).subscribe(
+        this.registerSubscription = this.auth.registerUser(this.registerForm.value).subscribe(
             data => {
                 localStorage.setItem('token', data['token']),
                 localStorage.setItem('name', data['name']),
@@ -54,10 +56,8 @@ export class AuthComponent implements OnInit {
     }
 
     submitLoginForm() {
-        if (!this.loginForm.valid) {
-            return;
-        }
-        this.auth.loginUser(this.registerForm.value).subscribe(
+        if (!this.loginForm.valid) return;
+        this.loginSubscription = this.auth.loginUser(this.registerForm.value).subscribe(
             data => {
                 localStorage.setItem('token', data['token']);
                 localStorage.setItem('name', data['name']),

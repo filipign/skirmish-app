@@ -23,6 +23,7 @@ import { AppComponent } from './app.component';
 import { AppHeaderComponent } from './layout/header/header.component';
 import { TournamentListComponent } from './tournament/tournament-list/tournament-list.component';
 import { AuthComponent } from './auth/auth/auth.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
     declarations: [
@@ -30,6 +31,7 @@ import { AuthComponent } from './auth/auth/auth.component';
         AppHeaderComponent,
         TournamentListComponent,
         AuthComponent,
+        ProfileComponent,
     ],
     imports: [
         FormsModule,

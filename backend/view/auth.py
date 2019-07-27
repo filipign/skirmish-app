@@ -1,6 +1,4 @@
-from json import dumps
-
-from flask import Blueprint, request, jsonify, abort, Response
+from flask import Blueprint, request, jsonify
 
 from backend.model.user import User
 from backend.view.response import ResponseStrings
@@ -89,10 +87,10 @@ def register():
 
     token = user.encode_auth_token().decode('utf8')
     return jsonify({
-            ResponseStrings.STATUS.value: ResponseStrings.SUCCESS.value,
-            ResponseStrings.TOKEN.value: token,
-            ResponseStrings.NAME.value: user.login
-        }), 201
+        ResponseStrings.STATUS.value: ResponseStrings.SUCCESS.value,
+        ResponseStrings.TOKEN.value: token,
+        ResponseStrings.NAME.value: user.login
+    }), 201
 
 @blueprint.route('/auth/logout', methods=('POST',))
 def logout():
@@ -114,9 +112,22 @@ def logout():
 def get_user_info():
     '''Send information about user.
 
-    If token is correct send user information.
+    If token in header is correct sends user information.
 
     Returns:
         dict: returns fict with information about user.
     '''
-    pass
+    token = request.headers.get('token')
+    user_id = User.decode_auth_token(token)
+    user = User.query.get(user_id['sub'])
+    if not user:
+        return jsonify({
+            ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,
+            ResponseStrings.MESSAGE.value: "You are not logged in"
+        }), 400
+
+    return jsonify({
+        ResponseStrings.STATUS.value: ResponseStrings.SUCCESS.value,
+        ResponseStrings.NAME.value: user.login,
+        'date': user.date_created
+    }), 201

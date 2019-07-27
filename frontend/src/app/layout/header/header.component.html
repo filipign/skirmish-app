@@ -1,10 +1,18 @@
 <mat-toolbar color="primary">
-    <span><b>{{appService.appName}}</b></span>
+    <div (click)="redirectMainPage()">
+        <span><b>{{appService.appName}}</b></span>
+    </div>
     <span fxFlex></span>
     <div *ngIf="name != ''">
         {{ name }}
-        <button mat-button>
+        <button mat-button [matMenuTriggerFor]="menu">
             <mat-icon>person</mat-icon>
         </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="redirectProfilePage()">Show profile</button>
+            <button mat-menu-item>Logout
+                <mat-icon>power_settings_new</mat-icon>
+            </button>
+        </mat-menu>
     </div>
 </mat-toolbar>
