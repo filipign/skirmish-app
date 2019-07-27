@@ -1,3 +1,10 @@
 <mat-toolbar color="primary">
     <span><b>{{appService.appName}}</b></span>
+    <span fxFlex></span>
+    <div *ngIf="name != ''">
+        {{ name }}
+        <button mat-button>
+            <mat-icon>person</mat-icon>
+        </button>
+    </div>
 </mat-toolbar>

@@ -43,6 +43,7 @@ def create_app():
     from backend.model.tournament import Tournament
     from backend.model.participant import Participant, Paring
     from backend.model.user import User
+    from backend.model.blacklist import TokenBlacklist
 
     # Used for db init:
     init_db(app)

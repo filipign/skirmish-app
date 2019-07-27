@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { DataSource } from '@angular/cdk/table';
 
 import { TournamentService } from '../../service/tournament.service';
 import { TournamentList } from '../../service/tournament.interface';

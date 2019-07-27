@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -13,6 +14,8 @@ import {
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
+    MatSnackBarModule,
 } from '@angular/material';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -29,6 +32,8 @@ import { AuthComponent } from './auth/auth/auth.component';
         AuthComponent,
     ],
     imports: [
+        FormsModule,
+        ReactiveFormsModule,
         BrowserAnimationsModule,
         FlexLayoutModule,
         BrowserModule,
@@ -42,6 +47,8 @@ import { AuthComponent } from './auth/auth/auth.component';
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
+        MatIconModule,
+        MatSnackBarModule,
     ],
     providers: [],
     bootstrap: [AppComponent]
