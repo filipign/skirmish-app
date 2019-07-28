@@ -12,8 +12,11 @@ export class AuthService {
     private routes = {
         register: `${environment.backendUrl}/auth/register`,
         login: `${environment.backendUrl}/auth/login`,
-        info: `${environment.backendUrl}/auth/user`
+        info: `${environment.backendUrl}/auth/user`,
+        logout: `${environment.backendUrl}/auth/logout`,
     }
+
+    loggedUserName: string = null;
 
     constructor(private httpClient: HttpClient) { }
 
@@ -27,6 +30,12 @@ export class AuthService {
 
     getUserInfo() {
         return this.httpClient.get<UserProfile>(this.routes.info, {
+            headers: getTokenHeaders(),
+        });
+    }
+
+    logoutUser() {
+        return this.httpClient.post(this.routes.logout, {
             headers: getTokenHeaders(),
         });
     }

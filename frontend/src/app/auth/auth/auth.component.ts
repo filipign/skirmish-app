@@ -3,6 +3,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { AuthService } from '../../service/auth.service';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -33,7 +34,8 @@ export class AuthComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private auth: AuthService,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private router: Router,
     ) { }
 
     ngOnInit() {
@@ -45,9 +47,13 @@ export class AuthComponent implements OnInit {
         if (!this.registerForm.valid) return;
         this.registerSubscription = this.auth.registerUser(this.registerForm.value).subscribe(
             data => {
-                localStorage.setItem('token', data['token']),
-                localStorage.setItem('name', data['name']),
-                this.snackBar.open('Successfully registered', this.action, { duration: this.snackTime });
+                localStorage.setItem('token', data['token']);
+                localStorage.setItem('name', data['name']);
+                this.auth.loggedUserName = data['name'];
+                this.snackBar.open('Successfully registered',
+                                   this.action,
+                                   { duration: this.snackTime });
+                this.router.navigate(['/']);
             },
             error => {
                 this.snackBar.open(error.error['msg'], this.action, { duration: this.snackTime });
@@ -60,8 +66,12 @@ export class AuthComponent implements OnInit {
         this.loginSubscription = this.auth.loginUser(this.registerForm.value).subscribe(
             data => {
                 localStorage.setItem('token', data['token']);
-                localStorage.setItem('name', data['name']),
-                this.snackBar.open('Successfully logged', this.action, { duration: this.snackTime });
+                localStorage.setItem('name', data['name']);
+                this.auth.loggedUserName = data['name'];
+                this.snackBar.open('Successfully logged',
+                                   this.action,
+                                   { duration: this.snackTime });
+                this.router.navigate(['/']);
             },
             error => {
                 this.snackBar.open(error.error['msg'], this.action, { duration: this.snackTime });

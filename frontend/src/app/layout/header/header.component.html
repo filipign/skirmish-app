@@ -3,16 +3,19 @@
         <span><b>{{appService.appName}}</b></span>
     </div>
     <span fxFlex></span>
-    <div *ngIf="name != ''">
-        {{ name }}
+    <div *ngIf="auth.loggedUserName !== null; else loggedOut">
+        {{ auth.loggedUserName }}
         <button mat-button [matMenuTriggerFor]="menu">
             <mat-icon>person</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="redirectProfilePage()">Show profile</button>
-            <button mat-menu-item>Logout
+            <button mat-menu-item (click)="logout()">Logout
                 <mat-icon>power_settings_new</mat-icon>
             </button>
         </mat-menu>
     </div>
+    <ng-template #loggedOut>
+        <button mat-button (click)="redirectLoginPage()">Sign Up</button>
+    </ng-template>
 </mat-toolbar>

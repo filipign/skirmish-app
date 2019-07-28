@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from backend.model.user import User
+from backend.model.blacklist import TokenBlacklist
 from backend.view.response import ResponseStrings
 from backend import db
 
@@ -106,7 +107,22 @@ def logout():
             'status': 'success'
         }
     '''
-    pass
+    token = request.headers.get('token')
+    try:
+        User.decode_auth_token(token)
+    except:
+        return jsonify({
+        ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,
+        ResponseStrings.MESSAGE.value: 'Credentials are not valid'
+    })
+    blacklist_token = TokenBlacklist(token=token)
+
+    db.session.add(blacklist_token)
+    db.session.commit()
+
+    return jsonify({
+        ResponseStrings.STATUS.value: ResponseStrings.SUCCESS.value,
+    }), 200
 
 @blueprint.route('/auth/user', methods=('GET',))
 def get_user_info():
