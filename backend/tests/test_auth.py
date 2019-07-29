@@ -66,13 +66,33 @@ def test_valid_logout(client):
     assert bytes(ResponseStrings.SUCCESS.value, encoding='utf-8') in response.data
 
 def test_invalid_logout(client):
-    '''It should not logout user.'''
+    '''It should logout user.'''
     header = {
-        'token': 'dIdMAptcCQHaVKNbY_DYAQEKlT0NGb4xB-wEeo'
+        'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjQ0MzU3NzIsImlhdCI6MTU2NDM0OTM3Miwic3ViIjoyfQ.0qP0BdIdMAptcCQHaVKNbY_DYAQEKlT0NGb4xB'
     }
     response = client.post('/auth/logout',
                            data=json.dumps(dict()),
                            content_type='application/json',
+                           headers=header)
+
+    assert bytes(ResponseStrings.FAILED.value, encoding='utf-8') in response.data
+
+def test_valid_userinfo(client):
+    '''It should return user info.'''
+    header = {
+        'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjQ0NTIwODMsImlhdCI6MTU2NDM2NTY4Mywic3ViIjoxfQ.7KgvuN9CUQSFRjXQr-REPNP1GfFEj8eWNLIb3zPCBk8'
+    }
+    response = client.get('/auth/user',
+                           headers=header)
+
+    assert bytes(ResponseStrings.SUCCESS.value, encoding='utf-8') in response.data
+
+def test_invalid_userinfo(client):
+    '''It should not return user info.'''
+    header = {
+        'token': ''
+    }
+    response = client.get('/auth/user',
                            headers=header)
 
     assert bytes(ResponseStrings.FAILED.value, encoding='utf-8') in response.data

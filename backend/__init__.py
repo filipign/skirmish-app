@@ -7,9 +7,12 @@ from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
+from backend.config import Config
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+c = Config()  # It's global variable for ease of testing
 db = SQLAlchemy()
 secret_key = ''
 db_uri = ''
@@ -21,8 +24,8 @@ except KeyError:
     logger.error('You have to set env variables (SECRET_KEY, DB_URI) first')
     exit()
 
-
 def init_db(app):
+    '''Drop exisiting database and create new one.'''
     with app.app_context():
         db.drop_all()
         db.create_all()

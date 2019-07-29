@@ -108,13 +108,14 @@ def logout():
         }
     '''
     token = request.headers.get('token')
-    try:
-        User.decode_auth_token(token)
-    except:
+    token_data = User.decode_auth_token(token)
+
+    if token_data is None or token is None:
         return jsonify({
-        ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,
-        ResponseStrings.MESSAGE.value: 'Credentials are not valid'
-    })
+            ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,
+            ResponseStrings.MESSAGE.value: 'Credentials are not valid'
+        })
+
     blacklist_token = TokenBlacklist(token=token)
 
     db.session.add(blacklist_token)
@@ -134,8 +135,14 @@ def get_user_info():
         dict: returns fict with information about user.
     '''
     token = request.headers.get('token')
-    user_id = User.decode_auth_token(token)
-    user = User.query.get(user_id['sub'])
+    token_data = User.decode_auth_token(token)
+    if token_data is None or token is None:
+        return jsonify({
+            ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,
+            ResponseStrings.MESSAGE.value: "Invalid token"
+        }), 400
+
+    user = User.query.get(token_data['sub'])
     if not user:
         return jsonify({
             ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,

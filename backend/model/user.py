@@ -5,6 +5,7 @@ import jwt
 
 from backend import db
 from backend import secret_key
+from backend import c
 
 
 class User(db.Model):
@@ -26,20 +27,20 @@ class User(db.Model):
 
     def encode_auth_token(self):
         '''
-        Generates the Auth Token.
+        Generates the Auth Token with user id payload.
 
         Returns:
             String: auth token.
         '''
         payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=c.config['jwt']['length_days']),
             'iat': datetime.datetime.utcnow(),
             'sub': self.id
         }
         return jwt.encode(
             payload,
             secret_key,
-            algorithm='HS256'
+            algorithm=c.config['jwt']['algorithm']
         )
 
     @staticmethod
@@ -76,6 +77,11 @@ class User(db.Model):
             auth_token (string): auth_token
 
         Returns:
-            integer: user's ID
+            integer: user's ID or None if token is invalid or signature expired.
         '''
-        return jwt.decode(auth_token, secret_key)
+        try:
+            return jwt.decode(auth_token, secret_key, algorithms=c.config['jwt']['algorithm'])
+        except jwt.ExpiredSignatureError:
+            return None
+        except jwt.InvalidTokenError:
+            return None

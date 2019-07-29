@@ -14,6 +14,7 @@ def load_data(db, app):
             login='user',
             password='testpass'
         )
+
         db.session.add(user)
         db.session.commit()
 
@@ -28,6 +29,8 @@ def app():
     load_data(db, app)
 
     yield app
+
+    # db.session.close()
 
 
 @pytest.fixture
