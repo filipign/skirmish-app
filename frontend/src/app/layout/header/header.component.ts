@@ -42,15 +42,18 @@ export class AppHeaderComponent implements OnInit, OnDestroy {
     logout() {
         this.auth.logoutUser().subscribe(
             data => {
-                localStorage.removeItem('token');
-                localStorage.removeItem('name');
-                this.auth.loggedUserName = null;
+                this.auth.emptyAuth();
+                this.router.navigate(['/tournaments']);
+            },
+            error => {
+                this.auth.emptyAuth();
                 this.router.navigate(['/tournaments']);
             }
         );
     }
 
     ngOnInit() {
+        this.auth.refreshAuth();
     }
 
     ngOnDestroy() {

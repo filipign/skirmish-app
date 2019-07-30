@@ -24,6 +24,8 @@ import { AppHeaderComponent } from './layout/header/header.component';
 import { TournamentListComponent } from './tournament/tournament-list/tournament-list.component';
 import { AuthComponent } from './auth/auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
+import { EditorComponent } from './tournament/editor/editor.component';
+import { TournamentComponent } from './tournament/tournament/tournament.component';
 
 @NgModule({
     declarations: [
@@ -32,6 +34,8 @@ import { ProfileComponent } from './profile/profile.component';
         TournamentListComponent,
         AuthComponent,
         ProfileComponent,
+        EditorComponent,
+        TournamentComponent,
     ],
     imports: [
         FormsModule,

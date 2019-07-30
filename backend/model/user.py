@@ -6,6 +6,7 @@ import jwt
 from backend import db
 from backend import secret_key
 from backend import c
+from backend.model.blacklist import TokenBlacklist
 
 
 class User(db.Model):
@@ -26,8 +27,7 @@ class User(db.Model):
         self.date_created = datetime.datetime.utcnow()
 
     def encode_auth_token(self):
-        '''
-        Generates the Auth Token with user id payload.
+        '''Generates the Auth Token with user id payload.
 
         Returns:
             String: auth token.
@@ -45,8 +45,7 @@ class User(db.Model):
 
     @staticmethod
     def get_hashed_password(password):
-        '''
-        Based on plain text password generates salted hash.
+        '''Based on plain text password generates salted hash.
 
         Args:
             password (string): plain text password.
@@ -57,8 +56,7 @@ class User(db.Model):
 
     @staticmethod
     def check_password(password, hashed_password):
-        '''
-        Check if password match hash.
+        '''Check if password match hash.
 
         Args:
             password (string): plain text password.
@@ -68,20 +66,35 @@ class User(db.Model):
         '''
         return bcrypt.checkpw(password.encode('utf8'), hashed_password.encode('utf8'))
 
+
     @staticmethod
-    def decode_auth_token(auth_token):
-        '''
-        Decodes the auth token.
+    def is_token_valid(headers):
+        '''Check if token is valid.
+
+        Token validation in based on blacklist and PyJWT decode rules.
 
         Args:
-            auth_token (string): auth_token
+            headers (dict): Headers of http request.
 
         Returns:
-            integer: user's ID or None if token is invalid or signature expired.
+            integer: Returns user id from token or 0 if token is invalid.
+                (as users ids starts from 1)
         '''
+        token = headers.get('token')
+        if not isinstance(token, str):
+            return 0
+        blacklisted = TokenBlacklist.query.filter_by(token=token).first()
+        if blacklisted:
+            return 0
+        token_data = { }
+
         try:
-            return jwt.decode(auth_token, secret_key, algorithms=c.config['jwt']['algorithm'])
+            token_data = jwt.decode(token, secret_key, algorithms=c.config['jwt']['algorithm'])
         except jwt.ExpiredSignatureError:
-            return None
+            return 0
         except jwt.InvalidTokenError:
-            return None
+            return 0
+
+        if not token_data:
+            return 0
+        return token_data['sub']

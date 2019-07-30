@@ -1,11 +1,12 @@
-from datetime import datetime
-import uuid
 from json import dumps
 
 from flask import Blueprint, request, jsonify, abort, Response
 
 from backend.model.tournament import Tournament
 from backend.model.participant import Participant
+from backend.model.user import User
+from backend.model.blacklist import TokenBlacklist
+from backend.view.response import ResponseStrings, ResponseMessages
 from backend import db
 
 blueprint = Blueprint('tournament', __name__)
@@ -13,13 +14,40 @@ blueprint = Blueprint('tournament', __name__)
 
 @blueprint.route('/tournament', methods=('POST', 'GET'))
 def manage_tournament():
-    '''Creates tournament or get summary info of all tournaments'''
+    '''Creates tournament or get summary info of all tournaments.
+
+        Post methods expect tournament data.
+        Example:
+            {
+                "name": "Grand Clash",
+            }
+
+        Returns:
+            201 status code with success message and tournament uuid.
+            400 status code if token or name is invalid.
+    '''
     if request.method == 'POST':
+        user_id = User.is_token_valid(request.headers)
+        if not user_id:
+            return jsonify(ResponseMessages.INVALID_TOKEN.value), 400
+
         name = request.json['name']
-        tournament_uuid = uuid.uuid4()
-        db.session.add(Tournament(name=name, date=datetime.now(), uuid=tournament_uuid))
+        if not isinstance(name, str):
+            return jsonify({
+                ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,
+                ResponseStrings.MESSAGE.value: "Invalid name"
+            }), 400
+        tournament = Tournament(
+            name=name,
+            user_id=user_id,
+        )
+        db.session.add(tournament)
         db.session.commit()
-        return jsonify({'msg': 'Successfully created'})
+
+        return jsonify({
+            ResponseStrings.STATUS.value: ResponseStrings.SUCCESS.value,
+            'uuid': tournament.uuid,
+        }), 201
 
     if request.method == 'GET':
         tournaments = Tournament.query.all()
@@ -51,5 +79,4 @@ def get_tournament(uuid):
             'participants': participants_list
         }
     }
-    print(result)
     return jsonify(result)

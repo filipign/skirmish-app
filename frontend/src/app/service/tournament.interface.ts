@@ -1,3 +1,7 @@
+export interface TournamentCreator {
+    name: string,
+}
+
 export interface Tournament {
     name: string,
     date: string,

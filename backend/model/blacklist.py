@@ -2,6 +2,8 @@ from datetime import datetime
 
 from backend import db
 
+# TODO: Blacklist of tokens is now stored in same database with other data,
+# would be good to setup redis db for that.
 class TokenBlacklist(db.Model):
     '''Represents blacklisted JWT tokens.'''
     __tablename__ = 'tokens'

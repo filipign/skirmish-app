@@ -6,5 +6,10 @@
     "jwt": {
         "length_days": 1,
         "algorithm": "HS256"
+    },
+    "tournament": {
+        "rounds": 3,
+        "vp": 3,
+        "tie": 1
     }
 }

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from backend.model.user import User
 from backend.model.blacklist import TokenBlacklist
-from backend.view.response import ResponseStrings
+from backend.view.response import ResponseStrings, ResponseMessages
 from backend import db
 
 blueprint = Blueprint('auth', __name__)
@@ -66,6 +66,7 @@ def register():
         }
     '''
     data = request.get_json()
+
     user = User.query.filter_by(login=data.get('login')).first()
     if user:
         return jsonify({
@@ -101,22 +102,19 @@ def logout():
 
     Returns:
        dict: returns dict with status.
+       400 status code if token is invalid.
 
        Example:
         {
             'status': 'success'
         }
     '''
-    token = request.headers.get('token')
-    token_data = User.decode_auth_token(token)
+    user_id = User.is_token_valid(request.headers)
+    print(request.headers)
+    if not user_id:
+        return jsonify(ResponseMessages.INVALID_TOKEN.value), 400
 
-    if token_data is None or token is None:
-        return jsonify({
-            ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,
-            ResponseStrings.MESSAGE.value: 'Credentials are not valid'
-        })
-
-    blacklist_token = TokenBlacklist(token=token)
+    blacklist_token = TokenBlacklist(token=request.headers.get('token'))
 
     db.session.add(blacklist_token)
     db.session.commit()
@@ -133,16 +131,13 @@ def get_user_info():
 
     Returns:
         dict: returns fict with information about user.
+        400 status code if token is invalid.
     '''
-    token = request.headers.get('token')
-    token_data = User.decode_auth_token(token)
-    if token_data is None or token is None:
-        return jsonify({
-            ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,
-            ResponseStrings.MESSAGE.value: "Invalid token"
-        }), 400
+    user_id = User.is_token_valid(request.headers)
+    if not user_id:
+        return jsonify(ResponseMessages.INVALID_TOKEN.value), 400
 
-    user = User.query.get(token_data['sub'])
+    user = User.query.get(user_id)
     if not user:
         return jsonify({
             ResponseStrings.STATUS.value: ResponseStrings.FAILED.value,

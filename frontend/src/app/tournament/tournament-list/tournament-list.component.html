@@ -1,20 +1,48 @@
-<table mat-table [dataSource]="tournamentList" class="mat-elevation-z8">
-    <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let tournament"> {{tournament.name}} </td>
-    </ng-container>
-    <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef> Date </th>
-        <td mat-cell *matCellDef="let tournament"> {{tournament.date}} </td>
-    </ng-container>
-    <ng-container matColumnDef="participants">
-        <th mat-header-cell *matHeaderCellDef> Participants </th>
-        <td mat-cell *matCellDef="let tournament"> {{tournament.participants}} </td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef> Actions </th>
-        <td mat-cell *matCellDef="let tournament"> Actions </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+<div fxFlexLayout="column">
+    <mat-card>
+        <mat-card-title>Create new tournament</mat-card-title>
+        <div *ngIf="!openCreator; else creator">
+            <div *ngIf="auth.loggedUserName !== null; else loggedOut">
+                <button mat-raised-button color="primary" (click)="openCreator = true">Create</button>
+            </div>
+            <ng-template #loggedOut>
+                <button mat-raised-button color="primary" (click)="redirectLoginPage()">Sign Up</button>
+            </ng-template>
+        </div>
+        <ng-template #creator>
+            <p>Provide name and we will take you to creator page.</p>
+            <form [formGroup]="creatorForm">
+                <mat-form-field appearance="standard">
+                    <mat-label>Tournament name</mat-label>
+                    <input matInput placeholder="Tournament name"
+                            formControlName="name">
+                </mat-form-field>
+                <button mat-raised-button
+                        color="primary"
+                        (click)="submitTournamentForm()"
+                        style="margin-left: 12px">Create
+                </button>
+            </form>
+        </ng-template>
+    </mat-card>
+    <table mat-table [dataSource]="tournamentList" class="mat-elevation-z8">
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name </th>
+            <td mat-cell *matCellDef="let tournament"> {{tournament.name}} </td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef> Date </th>
+            <td mat-cell *matCellDef="let tournament"> {{tournament.date | date: 'dd-MM-yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="participants">
+            <th mat-header-cell *matHeaderCellDef> Participants </th>
+            <td mat-cell *matCellDef="let tournament"> {{tournament.participants}} </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let tournament"> Actions </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="navigate(row)"></tr>
+    </table>
+</div>

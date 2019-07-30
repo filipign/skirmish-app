@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { environment } from '../../environments/environment';
 import { UserRegister, UserProfile, getTokenHeaders } from './auth.interface';
@@ -35,8 +35,22 @@ export class AuthService {
     }
 
     logoutUser() {
-        return this.httpClient.post(this.routes.logout, {
-            headers: getTokenHeaders(),
-        });
+        return this.httpClient.post(
+            this.routes.logout,
+            {},
+            {
+                headers: getTokenHeaders(),
+            }
+        );
+    }
+
+    refreshAuth() {
+        this.loggedUserName = localStorage.getItem('name');
+    }
+
+    emptyAuth() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        this.loggedUserName = null;
     }
 }
